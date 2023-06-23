@@ -1,4 +1,4 @@
-module.exports = [
+const comments = [
   {
     body: "Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus.",
     votes: -1,
@@ -2100,3 +2100,4 @@ module.exports = [
     created_at: 1580527320000,
   },
 ];
+export default comments

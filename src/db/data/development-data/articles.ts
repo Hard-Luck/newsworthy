@@ -1,4 +1,4 @@
-module.exports = [
+const articles = [
   {
     title: "Running a Node App",
     topic: "coding",
@@ -431,3 +431,5 @@ module.exports = [
       "https://images.pexels.com/photos/774321/pexels-photo-774321.jpeg?w=700&h=700",
   },
 ];
+
+export default articles;
