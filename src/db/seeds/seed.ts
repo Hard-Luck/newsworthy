@@ -1,32 +1,14 @@
 import format from "pg-format";
 import db from "../connection";
 import { convertTimestampToDate, createRef, formatComments } from "./utils";
+import type { Article, Comment, Topic, User } from "../../types/api";
 
-export interface SeedData {
-  topicData: { slug: string, description: string }[];
-  userData: { username: string, name: string, avatar_url: string }[];
+interface SeedData {
+  topicData: Topic[];
+  userData: User[];
   articleData: Article[];
   commentData: Comment[];
 }
-
-interface Article {
-  title: string;
-  topic: string;
-  author: string;
-  body: string;
-  created_at: number;
-  votes?: number;
-  article_img_url?: string;
-}
-
-interface Comment {
-  created_by?: string,
-  author: string;
-  body: string;
-  votes: number;
-  created_at: number;
-}
-
 
 const seed = async ({
   topicData,
@@ -48,9 +30,11 @@ const seed = async ({
 
   await db.query(`
     CREATE TABLE users (
-      username VARCHAR PRIMARY KEY,
+      id SERIAL PRIMARY KEY,
+      username  VARCHAR UNIQUE,
       name VARCHAR NOT NULL,
-      avatar_url VARCHAR
+      avatar_url VARCHAR,
+      password VARCHAR
     );
   `);
 
@@ -85,11 +69,12 @@ const seed = async ({
   const topicsPromise = db.query(insertTopicsQueryStr);
 
   const insertUsersQueryStr = format(
-    "INSERT INTO users ( username, name, avatar_url) VALUES %L;",
-    userData.map(({ username, name, avatar_url }) => [
+    "INSERT INTO users ( username, name, avatar_url, password) VALUES %L;",
+    userData.map(({ username, name, avatar_url, password }) => [
       username,
       name,
       avatar_url,
+      password,
     ])
   );
   const usersPromise = db.query(insertUsersQueryStr);

@@ -1,4 +1,5 @@
 export interface Article {
+    id?: number;
     title: string;
     topic: string;
     author: string;
@@ -9,6 +10,7 @@ export interface Article {
 }
 
 export interface Comment {
+    id?: number;
     body: string;
     votes: number;
     author: string;
@@ -19,12 +21,15 @@ export interface Comment {
 }
 
 export interface Topic {
+    id?: number;
     slug: string;
     description: string;
 }
 
 export interface User {
+    id?: number;
     username: string;
     name: string;
     avatar_url: string;
+    password: string;
 }
