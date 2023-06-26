@@ -1,4 +1,4 @@
-import type { Comment } from "../data/development-data";
+import { Comment } from "../../types/api";
 
 interface IDLookup {
   [key: string]: number;

@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   {
     description: 'The man, the Mitch, the legend',
     slug: 'mitch'

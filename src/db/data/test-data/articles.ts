@@ -1,4 +1,4 @@
-module.exports = [
+export default [
   {
     title: "Living in the shadow of a great man",
     topic: "mitch",
