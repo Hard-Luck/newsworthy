@@ -14,7 +14,7 @@ export async function getArticles(req: Request, res: Response, next: NextFunctio
 
 export async function getArticle(req: Request, res: Response, next: NextFunction) {
     try {
-        const id = parseInt(req.params.id);
+        const id = parseInt(req.params.article_id);
         const article = await getArticleById(id)
         res.send({ article });
     }

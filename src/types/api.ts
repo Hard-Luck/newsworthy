@@ -42,3 +42,12 @@ export interface User {
     avatar_url: string;
     password: string;
 }
+
+export type CommentResponse = {
+    comment_id: number;
+    body: string;
+    votes: number;
+    author: string;
+    article_id: number;
+    created_at: number;
+}

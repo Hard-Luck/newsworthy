@@ -14,7 +14,7 @@ export async function getAllArticles() {
         COUNT(c.comment_id) AS comment_count
     FROM 
         articles a
-    JOIN 
+    LEFT JOIN 
         comments c 
     ON 
         c.article_id = a.article_id
@@ -34,4 +34,11 @@ export async function getArticleById(id: number) {
     }
 
     return rows[0]
+}
+
+export async function articleExists(id: number) {
+    const { rowCount } = await db.query(
+        `SELECT * FROM articles WHERE article_id = $1`, [id]
+    )
+    return rowCount === 1
 }

@@ -1,4 +1,4 @@
-import { Article, ArticleWithCommentCount, Topic } from "../types/api";
+import { Article, ArticleWithCommentCount, CommentResponse, Topic } from "../types/api";
 
 export function isTopic(value: unknown): value is Topic {
     return (
@@ -37,4 +37,18 @@ export function isArticleWithCommentCount(value: unknown): value is ArticleWithC
         "votes" in value &&
         "article_img_url" in value
     );
-} 
+}
+
+export function isComment(value: unknown): value is CommentResponse {
+    return (
+        typeof value === "object" &&
+        value !== null &&
+        "author" in value &&
+        "body" in value &&
+        "comment_id" in value &&
+        "votes" in value &&
+        "article_id" in value &&
+        "created_at" in value
+
+    )
+}
