@@ -5,6 +5,8 @@ import seed from "../db/seeds/seed";
 import testData from "../db/data/test-data";
 import db from "../db/connection"
 import endpoints from "../endpoints.json"
+import { isSorted } from "../utils/sorted";
+import { CommentResponse } from "../types/api";
 
 
 let jwt: string;
@@ -143,6 +145,7 @@ describe("/api/articles/:article_id/comments", () => {
       body.comments.forEach((comment: unknown) => {
         expect(isComment(comment)).toBe(true);
       });
+      expect(isSorted<CommentResponse>(body.comments, "created_at")).toBe(true)
     });
     it("400: Should respond with error if invalid article ID type is provided", async () => {
       const invalidArticleId = "invalid";

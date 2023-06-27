@@ -38,7 +38,7 @@ export async function getArticleById(id: number) {
 
 export async function articleExists(id: number) {
     const { rowCount } = await db.query(
-        `SELECT * FROM articles WHERE article_id = $1`, [id]
+        `SELECT * FROM articles WHERE article_id = $1 `, [id]
     )
     return rowCount === 1
 }
