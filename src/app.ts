@@ -2,7 +2,7 @@ import { Express, Request, Response, NextFunction } from 'express';
 import express from 'express';
 
 import apiRouter from './routes/api';
-import { handleCustomErrors, handle500s } from './controllers/errors';
+import { handleCustomErrors, handle500s, handlePSQLErrors } from './controllers/errors';
 import { login } from './auth';
 
 const app: Express = express();
@@ -16,6 +16,7 @@ app.all('/*', (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use(handleCustomErrors);
+app.use(handlePSQLErrors)
 app.use(handle500s);
 
 export default app;

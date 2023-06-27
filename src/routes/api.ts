@@ -1,11 +1,14 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Response } from 'express';
 import topicsRouter from './topics';
 import { isAuthorised } from '../auth';
+import endpoints from '../endpoints.json';
+import articlesRouter from './articles';
 
 const router = express.Router();
-router.use(isAuthorised)
-router.get('/', (req: Request, res: Response, next: NextFunction) => {
-    // Your route handler logic goes here
+router.get('/', (_, res: Response) => {
+    res.json(endpoints);
 });
+router.use(isAuthorised)
 router.use("/topics", topicsRouter)
+router.use("/articles", articlesRouter)
 export default router;

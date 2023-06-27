@@ -1,0 +1,39 @@
+{
+  "endpoints": {
+    "GET /api": {
+      "description": "serves the description of all the endpoints including example requests, responses, and queries"
+    },
+    "GET /api/topics": {
+      "description": "serves all topics with there slug and description",
+      "exampleResponse": {
+        "topics": [
+          {
+            "description": "The man, the Mitch, the legend",
+            "slug": "mitch"
+          },
+          {
+            "description": "Not dogs",
+            "slug": "cats"
+          },
+          {
+            "description": "what books are made of",
+            "slug": "paper"
+          }
+        ]
+      }
+    },
+    "GET /api/articles/:article_id": {
+      "description": "serves a single article with the corresponding id",
+      "parameters": { "article_id": "integer corresponding to an article_id" },
+      "exampleResponse": {
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": 1594329060000,
+        "votes": 100,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
+  }
+}

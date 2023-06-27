@@ -13,6 +13,15 @@ export const handleCustomErrors = (
   }
 };
 
+export function handlePSQLErrors(err: any, req: Request, res: Response, next: NextFunction) {
+  const codes = ['22P02'];
+  if (codes.includes(err.code)) {
+    res.status(400).send({ msg: 'Bad request' });
+  } else {
+    next(err);
+  }
+}
+
 export const handle500s = (
   err: any,
   req: Request,
