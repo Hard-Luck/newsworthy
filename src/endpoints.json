@@ -22,6 +22,33 @@
         ]
       }
     },
+    "GET /api/articles": {
+      "description": "serves all articles with no article body and with comment count",
+      "exampleResponse": {
+        "articles": [
+          {
+            "author": "icellusedkars",
+            "title": "Eight pug gifs that remind me of mitch",
+            "article_id": 3,
+            "topic": "mitch",
+            "created_at": "2020-11-03T09:12:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            "comment_count": "2"
+          },
+          {
+            "author": "icellusedkars",
+            "title": "A",
+            "article_id": 6,
+            "topic": "mitch",
+            "created_at": "2020-10-18T01:00:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            "comment_count": "1"
+          }
+        ]
+      }
+    },
     "GET /api/articles/:article_id": {
       "description": "serves a single article with the corresponding id",
       "parameters": { "article_id": "integer corresponding to an article_id" },

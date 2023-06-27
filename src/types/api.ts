@@ -8,7 +8,16 @@ export interface Article {
     votes?: number;
     article_img_url?: string;
 }
-
+export interface ArticleWithCommentCount {
+    id?: number;
+    title: string;
+    topic: string;
+    author: string;
+    comment_count: number;
+    created_at: number;
+    votes?: number;
+    article_img_url?: string;
+}
 export interface Comment {
     id?: number;
     body: string;
