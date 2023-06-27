@@ -40,7 +40,6 @@ export function isArticleWithCommentCount(value: unknown): value is ArticleWithC
 }
 
 export function isComment(value: unknown): value is CommentResponse {
-    console.log(value);
     return (
         typeof value === "object" &&
         value !== null &&

@@ -8,7 +8,6 @@ export async function getComments(req: Request, res: Response, next: NextFunctio
         const comments = await getCommentsByArticleId(article_id)
         res.status(200).send({ comments })
     } catch (error) {
-        // console.log(error);
         next(error)
     }
 }
@@ -16,17 +15,12 @@ export async function getComments(req: Request, res: Response, next: NextFunctio
 export async function postComment(req: Request, res: Response, next: NextFunction) {
     try {
         const { username } = userFromRequest(req)
-        console.log(username);
-
         const { body } = req.body
         const article_id = parseInt(req.params.article_id)
-
         const comment = await addCommentByArticleId(article_id, username, body)
         res.status(201).send({ comment })
     }
     catch (error) {
-        console.log(error);
-
         next(error)
     }
 }
