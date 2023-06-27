@@ -10,15 +10,7 @@ const ENV = process.env.NODE_ENV || "development"
 const path = `${__dirname}/../../config/.env.${ENV}`
 dotenv.config({ path });
 
-export async function getUserById(id: number): Promise<User | null> {
-    try {
-        const { rows } = await db.query('SELECT * FROM users WHERE id = $1', [id]);
-        return rows[0] || null;
-    } catch (error) {
-        console.error('getUserById:', error);
-        throw error;
-    }
-}
+
 export async function getUserByUsername(username: string): Promise<User | null> {
     try {
         const { rows } = await db.query('SELECT * FROM users WHERE username = $1', [username]);
@@ -31,7 +23,7 @@ export async function getUserByUsername(username: string): Promise<User | null> 
 
 export async function createToken(user: User) {
     try {
-        return jwt.sign({ id: user.id }, process.env.SECRET as string);
+        return jwt.sign({ username: user.username }, process.env.SECRET as string);
     } catch (error) {
         console.error('createToken:', error);
         throw error;
@@ -41,7 +33,7 @@ export async function createToken(user: User) {
 export async function verifyToken(token: string) {
     try {
         const decoded = jwt.verify(token, process.env.SECRET as string);
-        return decoded as { id: number };
+        return decoded as { username: string };
     } catch (error) {
         console.error('verifyToken:', error);
         return null;
@@ -81,7 +73,7 @@ export async function isAuthorised(req: Request, res: Response, next: NextFuncti
             return res.status(403).send('Failed to authenticate token');
         }
 
-        const user = await getUserById(decoded.id);
+        const user = await getUserByUsername(decoded.username);
         if (!user) {
             return res.status(403).send('User not found');
         }
@@ -109,3 +101,10 @@ export async function login(req: Request, res: Response) {
     const token = await createToken(user);
     res.send({ token });
 };
+export function userFromRequest(req: Request) {
+    const { user }: {
+        user: { username: string, name: string, avatar_url: string }
+    } = req as any
+    if (!user) throw new Error('Bad Request')
+    return user
+}

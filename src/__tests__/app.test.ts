@@ -168,4 +168,62 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(404);
     });
   });
+  describe("POST", () => {
+    it("201: Responds with the posted comment when a valid article ID and comment body are provided", async () => {
+      const articleId = 1; // Use the ID of an article that exists in the database
+      const commentBody = { body: "This is a new comment!" };
+
+      const { body } = await request(app)
+        .post(`/api/articles/${articleId}/comments`)
+        .send(commentBody)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(201);
+
+      expect(isComment(body.comment)).toBe(true);
+    });
+
+    it("400: Responds with error when an invalid article ID type is provided", async () => {
+      const invalidArticleId = "invalid";
+      const commentBody = { body: "This is a new comment!" };
+
+      await request(app)
+        .post(`/api/articles/${invalidArticleId}/comments`)
+        .send(commentBody)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+    });
+
+    it("400: Responds with error when the request body does not contain a 'body' property", async () => {
+      const articleId = 1; // Use the ID of an article that exists in the database
+      const commentBody = { notBody: "This is a new comment!" };
+
+      await request(app)
+        .post(`/api/articles/${articleId}/comments`)
+        .send(commentBody)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+    });
+
+    it("403: Responds with error when the user is not logged in", async () => {
+      const articleId = 1; // Use the ID of an article that exists in the database
+      const commentBody = { body: "This is a new comment!" };
+
+      await request(app)
+        .post(`/api/articles/${articleId}/comments`)
+        .send(commentBody)
+        .expect(403);
+    });
+
+    it("404: Responds with error when the article ID does not exist", async () => {
+      const nonExistentArticleId = 9999;
+      const commentBody = { body: "This is a new comment!" };
+
+      await request(app)
+        .post(`/api/articles/${nonExistentArticleId}/comments`)
+        .send(commentBody)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(404);
+    });
+  });
+
 });
