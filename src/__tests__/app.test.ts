@@ -301,5 +301,48 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(404);
     });
   });
-
 });
+describe("/api/comments/:comment_id", () => {
+  describe("DELETE", () => {
+    it("204: Responds with no content when a valid comment ID is provided and comment is deleted", async () => {
+      const commentIdUserOwns = 1;
+      await request(app)
+        .delete(`/api/comments/${commentIdUserOwns}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(204);
+    });
+
+    it("400: Responds with error when an invalid comment ID type is provided", async () => {
+      const invalidCommentId = "invalid";
+
+      await request(app)
+        .delete(`/api/comments/${invalidCommentId}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+    });
+
+    it("403: Responds with error when the user is not logged in", async () => {
+      const commentId = 1;
+      await request(app)
+        .delete(`/api/comments/${commentId}`)
+        .expect(403);
+    });
+
+    it("403: Responds with error when the comment does not belong to the user", async () => {
+      const commentIdNotBelongToUser = 3;
+      await request(app)
+        .delete(`/api/comments/${commentIdNotBelongToUser}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(403);
+    });
+
+    it("404: Responds with error when the comment ID does not exist", async () => {
+      const nonExistentCommentId = 9999;
+      await request(app)
+        .delete(`/api/comments/${nonExistentCommentId}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(404);
+    });
+  });
+
+})

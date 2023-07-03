@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { addCommentByArticleId, getCommentsByArticleId } from "../models/comments.model"
+import { addCommentByArticleId, deleteCommentById, getCommentsByArticleId } from "../models/comments.model"
 import { userFromRequest } from "../auth"
 
 export async function getComments(req: Request, res: Response, next: NextFunction) {
@@ -21,6 +21,17 @@ export async function postComment(req: Request, res: Response, next: NextFunctio
         res.status(201).send({ comment })
     }
     catch (error) {
+        next(error)
+    }
+}
+
+export async function deleteComment(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { username } = userFromRequest(req)
+        const { comment_id } = req.params
+        await deleteCommentById(+comment_id, username)
+        res.sendStatus(204)
+    } catch (error) {
         next(error)
     }
 }

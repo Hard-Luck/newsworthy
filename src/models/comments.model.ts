@@ -17,3 +17,27 @@ export async function addCommentByArticleId(articleId: number, username: string,
     `, [articleId, username, body])
     return rows[0];
 }
+
+export async function deleteCommentById(commentId: number, username: string) {
+    const comment = await getComment(commentId);
+    if (!comment) return Promise.reject({ status: 404, msg: "Comment not found" })
+    if (comment.author !== username) return Promise.reject({ status: 403, msg: "Unauthorized" })
+    return db.query(`
+    DELETE FROM comments 
+    WHERE 
+        comment_id = $1 AND author = $2
+    RETURNING *;
+    `, [commentId, username])
+
+}
+
+async function getComment(commentId: number) {
+    const { rows } = await db.query(`
+    SELECT * 
+    FROM 
+        comments 
+    WHERE 
+        comment_id = $1
+    `, [commentId,])
+    return rows[0];
+}
