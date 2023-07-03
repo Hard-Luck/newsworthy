@@ -61,6 +61,34 @@
         "votes": 100,
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
+    },
+    "POST /api/article/:article_id/comments": {
+      "description": "adds comment to the article matching the article_id and serves the comment on the response",
+      "exampleBody": {
+        "body": "This is a comment"
+      },
+      "exampleResponse": {
+        "comment_id": 100,
+        "body": "This is a comment",
+        "article_id": 1,
+        "votes": 0,
+        "created_at": 1594329060000
+      }
+    },
+    "PATCH /api/articles/:article_id": {
+      "description": "increments or decrements the votes on an article and serves the updated article",
+      "exampleBody": {
+        "inc_votes": 1
+      },
+      "exampleResponse": {
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": 1594329060000,
+        "votes": 101,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
     }
   }
 }

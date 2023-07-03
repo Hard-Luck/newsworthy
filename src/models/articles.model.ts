@@ -44,3 +44,12 @@ export async function articleExists(id: number) {
     return rowCount === 1
 }
 
+export async function updateArticleVotes(id: number, votes: number) {
+    const { rowCount, rows } = await db.query(
+        `UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *`, [votes, id]
+    )
+    if (rowCount === 0) {
+        return Promise.reject({ status: 404, msg: "Article not found" })
+    }
+    return rows[0]
+}

@@ -8,9 +8,7 @@ import endpoints from "../endpoints.json"
 import { isSorted } from "../utils/sorted";
 import { CommentResponse } from "../types/api";
 
-
 let jwt: string;
-
 beforeAll(async () => {
   try {
     const { body } = await request(app)
@@ -97,6 +95,7 @@ describe("/api/articles/:article_id", () => {
 
       expect(isArticle(body.article)).toBe(true);
     });
+
     it("400: Should respond with error if invalid article id type is provided", async () => {
       const invalidArticleId = "invalid";
       const { body } = await request(app)
@@ -120,8 +119,85 @@ describe("/api/articles/:article_id", () => {
       expect(body.msg).toBe('Article not found');
     });
   });
-});
+  describe("PATCH", () => {
+    it("200: Responds with the updated article when a valid vote increment is provided", async () => {
+      const articleId = 1;
+      const voteIncrement = { inc_votes: 1 };
 
+      const { body } = await request(app)
+        .patch(`/api/articles/${articleId}`)
+        .send(voteIncrement)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+
+      expect(isArticle(body.article)).toBe(true);
+      expect(body.article.votes).toBe(1);
+    });
+    it("200: Responds with the updated article when a valid positive vote increment greater than one is provided", async () => {
+      const articleId = 1; // Use the ID of an article that exists in the database
+      const voteIncrement = { inc_votes: 10 };
+
+      const { body } = await request(app)
+        .patch(`/api/articles/${articleId}`)
+        .send(voteIncrement)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+
+      expect(body.article.votes).toBe(10);
+    });
+
+    it("200: Responds with the updated article when a valid negative vote increment is provided", async () => {
+      const articleId = 1; // Use the ID of an article that exists in the database
+      const voteIncrement = { inc_votes: -5 };
+
+      const { body } = await request(app)
+        .patch(`/api/articles/${articleId}`)
+        .send(voteIncrement)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+
+      expect(body.article.votes).toBe(-5);
+    });
+    it("400: Responds with error when an invalid vote increment is provided", async () => {
+      const articleId = 1;
+      const voteIncrement = { inc_votes: "invalid" };
+
+      await request(app)
+        .patch(`/api/articles/${articleId}`)
+        .send(voteIncrement)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+    });
+    it("400: Responds with error when an invalid article ID type is provided", async () => {
+      const invalidArticleId = "invalid";
+      const voteIncrement = { inc_votes: 1 };
+
+      await request(app)
+        .patch(`/api/articles/${invalidArticleId}`)
+        .send(voteIncrement)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+    });
+    it("403: Responds with error when the user is not logged in", async () => {
+      const articleId = 1; // Use the ID of an article that exists in the database
+      const voteIncrement = { inc_votes: 1 };
+      await request(app)
+        .patch(`/api/articles/${articleId}`)
+        .send(voteIncrement)
+        .expect(403);
+    });
+    it("404: Responds with error when the article ID does not exist", async () => {
+      const nonExistentArticleId = 9999;
+      const voteIncrement = { inc_votes: 1 };
+      await request(app)
+        .patch(`/api/articles/${nonExistentArticleId}`)
+        .send(voteIncrement)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(404);
+    });
+  });
+
+});
 describe("/api/articles/:article_id/comments", () => {
   describe('GET', () => {
     it("200: Should respond with an empty array of comments for a valid article ID with no comments", async () => {
