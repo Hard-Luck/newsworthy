@@ -4,6 +4,7 @@ import { isAuthorised } from '../auth';
 import endpoints from '../endpoints.json';
 import articlesRouter from './articles';
 import commentsRouter from './comments';
+import userRouter from './users';
 
 const router = express.Router();
 router.get('/', (_, res: Response) => {
@@ -13,4 +14,5 @@ router.use(isAuthorised)
 router.use("/topics", topicsRouter)
 router.use("/articles", articlesRouter)
 router.use("/comments", commentsRouter)
+router.use("/users", userRouter)
 export default router;

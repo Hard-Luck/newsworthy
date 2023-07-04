@@ -92,6 +92,13 @@
     },
     "DELETE /api/comments/:comment_id": {
       "description": "Deletes the comments if user has permission to delete, serves nothing"
+    },
+    "GET /api/users": "Serves up a list of all the users",
+    "queries": [],
+    "exampleResponse": {
+      "username": "butter_bridge",
+      "name": "jonny",
+      "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
     }
   }
 }

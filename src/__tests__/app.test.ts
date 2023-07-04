@@ -344,5 +344,25 @@ describe("/api/comments/:comment_id", () => {
         .expect(404);
     });
   });
-
 })
+describe("/api/users", () => {
+  describe('GET', () => {
+    it("200: Should respond with an array of users, each with username, name and avatar_url", async () => {
+      const { body } = await request(app)
+        .get("/api/users")
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+      expect(Array.isArray(body.users)).toBe(true);
+      body.users.forEach((user: any) => {
+        expect(user).toHaveProperty('username');
+        expect(user).toHaveProperty('name');
+        expect(user).toHaveProperty('avatar_url');
+      });
+    });
+    it("403: Should respond with error if user is not logged in", async () => {
+      await request(app)
+        .get("/api/users")
+        .expect(403);
+    });
+  });
+});
