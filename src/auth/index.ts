@@ -63,7 +63,7 @@ export async function isAuthorised(req: Request, res: Response, next: NextFuncti
         const authHeader = req.headers.authorization;
 
         if (!authHeader) {
-            return res.status(403).send('No token provided');
+            return res.status(403).send({ msg: 'No token provided' });
         }
 
         const token = authHeader.split(' ')[1];
