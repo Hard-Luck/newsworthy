@@ -10,7 +10,11 @@ process.env.PGDATABASE = process.env.PGDATABASE;
 if (!process.env.PGDATABASE) {
   throw new Error('PGDATABASE not set');
 }
-
-const pool = new Pool();
+const config = ENV === "production" ? {
+  connectionString: process.env.PGDATABASE, ssl: {
+    rejectUnauthorized: false
+  }
+} : {};
+const pool = new Pool(config)
 
 export default pool;

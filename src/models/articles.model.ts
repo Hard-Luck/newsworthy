@@ -43,7 +43,21 @@ export async function getAllArticles({ sort_by, order, topic }: { sort_by?: stri
 }
 export async function getArticleById(id: number) {
     const { rows, rowCount } = await db.query(
-        `SELECT * FROM articles WHERE article_id = $1`, [id]
+        `
+        SELECT a.*, CAST(COUNT(c.comment_id) AS INT) AS comment_count 
+        FROM 
+            articles a
+        JOIN
+            comments c
+        ON
+            c.article_id = a.article_id
+        WHERE 
+            a.article_id = $1
+        GROUP BY
+            a.article_id
+
+        `, [id]
+
     )
     if (rowCount === 0) {
         return Promise.reject({ status: 404, msg: "Article not found" })

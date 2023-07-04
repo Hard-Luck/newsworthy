@@ -155,6 +155,14 @@ describe("/api/articles/:article_id", () => {
         .expect(404);
       expect(body.msg).toBe('Article not found');
     });
+    it("Should have additional property of comment count", async () => {
+      const articleId = 1
+      const { body } = await request(app)
+        .get(`/api/articles/${articleId}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+      expect(body.article).toHaveProperty("comment_count", 11);
+    })
   });
   describe("PATCH", () => {
     it("200: Responds with the updated article when a valid vote increment is provided", async () => {
