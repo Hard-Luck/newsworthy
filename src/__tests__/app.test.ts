@@ -56,7 +56,7 @@ describe("/api/topics", () => {
 });
 describe('/api/articles', () => {
   describe('GET', () => {
-    it("200: Should respond with an array of articles, each with required properties", async () => {
+    it("200: Should respond with an array of articles, each with required properties sorted by created_at", async () => {
       const { body } = await request(app)
         .get("/api/articles")
         .set('Authorization', `Bearer ${jwt}`)
@@ -68,14 +68,37 @@ describe('/api/articles', () => {
         expect(isArticleWithCommentCount(article)).toBe(true);
         expect(article).not.toHaveProperty('body');
       });
-      let sorted = true;
-      for (let i = 1; i < body.articles.length; i++) {
-        if (body.articles[i - 1].created_at < body.articles[i].created_at) {
-          sorted = false;
-          break;
-        }
-      }
-      expect(sorted).toBe(true);
+      isSorted(body.articles, 'created_at', true);
+    });
+    it("200: Should respond with articles sorted by votes in ascending order when sort_by=votes and order=asc is provided", async () => {
+      const { body } = await request(app)
+        .get("/api/articles?sort_by=votes&order=asc")
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+      expect(isSorted(body.articles, "votes", false)).toBe(true);
+    });
+    it("200: Should respond with articles filtered by topic when topic query is provided", async () => {
+      const topic = "mitch"; // Replace with an actual topic from your database
+      const { body } = await request(app)
+        .get(`/api/articles?topic=${topic}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+
+      body.articles.forEach((article: any) => {
+        expect(article.topic).toEqual(topic);
+      });
+    });
+    it("400: Should respond with error when invalid sort_by is provided", async () => {
+      await request(app)
+        .get("/api/articles?sort_by=invalid")
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+    });
+    it("400: Should respond with error when invalid order is provided", async () => {
+      await request(app)
+        .get("/api/articles?order=invalid")
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
     });
     it("403: Should respond with error if user is not logged in", async () => {
       await request(app)

@@ -3,7 +3,8 @@ import { getAllArticles, getArticleById, updateArticleVotes } from "../models/ar
 
 export async function getArticles(req: Request, res: Response, next: NextFunction) {
     try {
-        const articles = await getAllArticles();
+        const { sort_by, order, topic } = req.query as { sort_by: string, order: string, topic: string }
+        const articles = await getAllArticles({ sort_by, order, topic });
         res.send({ articles })
     } catch (error) {
         next(error);

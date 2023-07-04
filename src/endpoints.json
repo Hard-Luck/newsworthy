@@ -24,6 +24,19 @@
     },
     "GET /api/articles": {
       "description": "serves all articles with no article body and with comment count",
+      "queries": [
+        {
+          "topic": "if ommited will serve all articles else will find matching (including partial match) it will return no results if match is not found"
+        },
+        {
+          "sort_by": "defaults to date, serves 400 bad request if sort_by is invalid",
+          "validSorts": ["created_at", "title", "votes", "author"]
+        },
+        {
+          "order": "defaults to descending serves 400 if order is invalid",
+          "validOrder": ["asc", "desc"]
+        }
+      ],
       "exampleResponse": {
         "articles": [
           {

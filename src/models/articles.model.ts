@@ -1,8 +1,16 @@
 import db from "../db/connection";
 
 
-export async function getAllArticles() {
-    const { rows } = await db.query(`
+export async function getAllArticles({ sort_by, order, topic }: { sort_by?: string, order?: string, topic?: string }) {
+    sort_by ??= "created_at"
+    order ??= "desc"
+    const queryParams = []
+    const validSortBy = ["created_at", "title", "topic", "author", "votes"]
+    const validOrder = ["asc", "desc"]
+    if (!validSortBy.includes(sort_by) || !validOrder.includes(order)) {
+        return Promise.reject({ status: 400, msg: "Bad request" })
+    }
+    let query = `
     SELECT 
         a.author,
         a.title,
@@ -18,11 +26,19 @@ export async function getAllArticles() {
         comments c 
     ON 
         c.article_id = a.article_id
+    `
+    if (topic) {
+        query += ` WHERE a.topic = $1 `
+        queryParams.push(topic)
+    }
+    query += `
     GROUP BY 
         a.article_id
     ORDER BY
-        a.created_at DESC
-    `)
+        a.${sort_by} ${order}
+        `
+
+    const { rows } = await db.query(query, queryParams)
     return rows
 }
 export async function getArticleById(id: number) {
