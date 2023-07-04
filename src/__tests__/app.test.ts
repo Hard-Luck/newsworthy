@@ -1,6 +1,5 @@
 import app from "../app";
 import request from "supertest";
-import { isArticle, isArticleWithCommentCount, isComment, isTopic } from "../utils/typeguards";
 import seed from "../db/seeds/seed";
 import testData from "../db/data/test-data";
 import db from "../db/connection"
@@ -43,7 +42,8 @@ describe("/api/topics", () => {
         .expect(200);
       expect(body.topics.length).toBe(3);
       body.topics.forEach((topic: unknown) => {
-        expect(isTopic(topic)).toBe(true);
+        expect(topic).toHaveProperty('slug');
+        expect(topic).toHaveProperty('description');
       });
     });
     it("403: Should respond with error if user is not logged in", async () => {
@@ -65,7 +65,14 @@ describe('/api/articles', () => {
       expect(Array.isArray(body.articles)).toBe(true);
       expect(body.articles.length).toBe(13);
       body.articles.forEach((article: unknown) => {
-        expect(isArticleWithCommentCount(article)).toBe(true);
+        expect(article).toHaveProperty('author');
+        expect(article).toHaveProperty('title');
+        expect(article).toHaveProperty('article_id');
+        expect(article).toHaveProperty('topic');
+        expect(article).toHaveProperty('created_at');
+        expect(article).toHaveProperty('votes');
+        expect(article).toHaveProperty('article_img_url');
+        expect(article).toHaveProperty('comment_count');
         expect(article).not.toHaveProperty('body');
       });
       isSorted(body.articles, 'created_at', true);
@@ -116,7 +123,14 @@ describe("/api/articles/:article_id", () => {
         .set('Authorization', `Bearer ${jwt}`)
         .expect(200);
 
-      expect(isArticle(body.article)).toBe(true);
+      expect(body.article).toHaveProperty("author");
+      expect(body.article).toHaveProperty("title");
+      expect(body.article).toHaveProperty("article_id");
+      expect(body.article).toHaveProperty("body");
+      expect(body.article).toHaveProperty("topic");
+      expect(body.article).toHaveProperty("created_at");
+      expect(body.article).toHaveProperty("votes");
+      expect(body.article).toHaveProperty("article_img_url");
     });
 
     it("400: Should respond with error if invalid article id type is provided", async () => {
@@ -153,7 +167,6 @@ describe("/api/articles/:article_id", () => {
         .set('Authorization', `Bearer ${jwt}`)
         .expect(200);
 
-      expect(isArticle(body.article)).toBe(true);
       expect(body.article.votes).toBe(1);
     });
     it("200: Responds with the updated article when a valid positive vote increment greater than one is provided", async () => {
@@ -241,8 +254,14 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(200);
 
       expect(Array.isArray(body.comments)).toBe(true);
+      expect(body.comments.length).toBe(11);
       body.comments.forEach((comment: unknown) => {
-        expect(isComment(comment)).toBe(true);
+        expect(comment).toHaveProperty('comment_id');
+        expect(comment).toHaveProperty('votes');
+        expect(comment).toHaveProperty('created_at');
+        expect(comment).toHaveProperty('author');
+        expect(comment).toHaveProperty('body');
+        expect(comment).toHaveProperty('article_id');
       });
       expect(isSorted<CommentResponse>(body.comments, "created_at")).toBe(true)
     });
@@ -269,7 +288,7 @@ describe("/api/articles/:article_id/comments", () => {
   });
   describe("POST", () => {
     it("201: Responds with the posted comment when a valid article ID and comment body are provided", async () => {
-      const articleId = 1; // Use the ID of an article that exists in the database
+      const articleId = 1;
       const commentBody = { body: "This is a new comment!" };
 
       const { body } = await request(app)
@@ -277,8 +296,13 @@ describe("/api/articles/:article_id/comments", () => {
         .send(commentBody)
         .set('Authorization', `Bearer ${jwt}`)
         .expect(201);
-
-      expect(isComment(body.comment)).toBe(true);
+      const { comment } = body
+      expect(comment).toHaveProperty('comment_id');
+      expect(comment).toHaveProperty('votes');
+      expect(comment).toHaveProperty('created_at');
+      expect(comment).toHaveProperty('author');
+      expect(comment).toHaveProperty('body');
+      expect(comment).toHaveProperty('article_id');
     });
 
     it("400: Responds with error when an invalid article ID type is provided", async () => {
