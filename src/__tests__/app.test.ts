@@ -421,3 +421,37 @@ describe("/api/users", () => {
     });
   });
 });
+describe("/api/users/:username", () => {
+  describe('GET', () => {
+
+    it("200: Should respond with a user object with correct properties", async () => {
+      const username = "butter_bridge";
+
+      const { body } = await request(app)
+        .get(`/api/users/${username}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+
+      expect(body.user).toHaveProperty("username", "butter_bridge");
+      expect(body.user).toHaveProperty("name", "jonny");
+      expect(body.user).toHaveProperty("avatar_url", "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg");
+    });
+    it("403: Should respond with an error if the user is not authenticated", async () => {
+      const username = "butter_bridge";
+      const { body } = await request(app)
+        .get(`/api/users/${username}`)
+        .expect(403); // Expect a 403 status code for unauthenticated requests
+      expect(body.msg).toEqual('No token provided');
+    });
+    it("404: Should respond with an error if the username is not found", async () => {
+      const nonExistingUsername = "non_existing_username"; // Insert a username that does not exist in your database
+
+      const { body } = await request(app)
+        .get(`/api/users/${nonExistingUsername}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(404);
+      expect(body.msg).toEqual('Not found');
+    });
+  });
+
+});

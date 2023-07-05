@@ -11,12 +11,12 @@ const path = `${__dirname}/../../config/.env.${ENV}`
 dotenv.config({ path });
 
 
-export async function getUserByUsername(username: string): Promise<User | null> {
+export async function getUserWithPasswordByUsername(username: string): Promise<User | null> {
     try {
         const { rows } = await db.query('SELECT * FROM users WHERE username = $1', [username]);
         return rows[0] || null;
     } catch (error) {
-        console.error('getUserByUsername:', error);
+        console.error('getUserWithPasswordByUsername:', error);
         throw error;
     }
 }
@@ -73,7 +73,7 @@ export async function isAuthorised(req: Request, res: Response, next: NextFuncti
             return res.status(403).send('Failed to authenticate token');
         }
 
-        const user = await getUserByUsername(decoded.username);
+        const user = await getUserWithPasswordByUsername(decoded.username);
         if (!user) {
             return res.status(403).send('User not found');
         }
@@ -89,7 +89,7 @@ export async function isAuthorised(req: Request, res: Response, next: NextFuncti
 export async function login(req: Request, res: Response) {
     const { username, password } = req.body;
 
-    const user = await getUserByUsername(username);
+    const user = await getUserWithPasswordByUsername(username);
     if (!user) {
         return res.status(401).send('Invalid credentials');
     }
