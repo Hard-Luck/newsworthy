@@ -11,7 +11,7 @@ let jwt: string;
 beforeAll(async () => {
   try {
     const { body } = await request(app)
-      .post("/login")
+      .post("/api/login")
       .send({ username: "butter_bridge", password: "butter_bridge" });
     jwt = body.token;
   } catch (error) {

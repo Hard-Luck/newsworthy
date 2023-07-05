@@ -1,5 +1,19 @@
 {
     "endpoints": {
+        "POST /api/login": {
+            "description": "Authenticates user and returns a JWT token. This token is required for all other endpoints, without it, a 403 status code will be returned.",
+            "exampleBody": {
+                "username": "test_user",
+                "password": "test_password"
+            },
+            "exampleResponse": {
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlciIsImlhdCI6MTYxNTM4Mjk2OX0.5hz1BEON7ZngCZw_VzJ4Ce7cYbP7W6y8U9PL4mMqE8k"
+            },
+            "possibleErrors": {
+                "400": "If the request body is not properly formatted.",
+                "401": "If the username or password is incorrect."
+            }
+        },
         "GET /api": {
             "description": "serves the description of all the endpoints including example requests, responses, and queries",
             "responses": {
@@ -104,7 +118,7 @@
                 "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
             }
         },
-        "POST /api/article/:article_id/comments": {
+        "POST /api/articles/:article_id/comments": {
             "description": "adds comment to the article matching the article_id and serves the comment on the response",
             "responses": {
                 "201": {
