@@ -94,6 +94,29 @@
                 ]
             }
         },
+        "POST /api/articles": {
+            "description": "adds a new article and serves the newly added article",
+            "requestBody": {
+                "title": "string of the article's title",
+                "body": "string of the article's body",
+                "topic": "string of the article's topic",
+                "article_img_url": "optional string of the article image url; defaults to a standard image if not provided"
+            },
+            "responseBody": {
+                "author": "author of the article",
+                "title": "title of the article",
+                "body": "body of the article",
+                "topic": "topic of the article",
+                "article_id": "the newly assigned id for the article",
+                "votes": "initially set to 0",
+                "created_at": "current time the article was created",
+                "comment_count": "initially set to 0",
+                "article_img_url": "url of the article's image"
+            },
+            "possibleErrors": {
+                "400": "bad request when missing required fields or unnecessary properties provided"
+            }
+        },
         "GET /api/articles/:article_id": {
             "description": "serves a single article with the corresponding id",
             "responses": {

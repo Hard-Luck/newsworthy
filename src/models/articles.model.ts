@@ -1,4 +1,5 @@
 import db from "../db/connection";
+import format from "pg-format";
 
 
 export async function getAllArticles({ sort_by, order, topic }: { sort_by?: string, order?: string, topic?: string }) {
@@ -82,4 +83,21 @@ export async function updateArticleVotes(id: number, votes: number) {
         return Promise.reject({ status: 404, msg: "Article not found" })
     }
     return rows[0]
+}
+
+export async function insertArticle(article: { title: string, body: string, author: string, topic: string, article_img_url?: string }) {
+    const allowedColumnNames = ["title", "body", "author", "topic", "article_img_url"]
+    const entries = Object.entries(article)
+    const columnNames = entries.map(([key]) => key)
+    const values = entries.map(([, value]) => value)
+    if (columnNames.some(column => !allowedColumnNames.includes(column))) {
+        return Promise.reject({ status: 400, msg: "Bad request" })
+    }
+    let columnsFormat = columnNames.map(() => '%I').join(', ');
+    let valuesFormat = columnNames.map(() => '%L').join(', ');
+    const query = format(`INSERT INTO articles (${columnsFormat}) VALUES (${valuesFormat}) RETURNING *;`,
+        ...columnNames, ...values);
+    const { rows } = await db.query(query)
+    return rows[0]
+
 }

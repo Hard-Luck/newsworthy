@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { getAllArticles, getArticleById, updateArticleVotes } from "../models/articles.model";
+import { getAllArticles, getArticleById, insertArticle, updateArticleVotes } from "../models/articles.model";
+import { userFromRequest } from "../auth";
 
 export async function getArticles(req: Request, res: Response, next: NextFunction) {
     try {
@@ -31,6 +32,20 @@ export async function patchArticleVotes(req: Request, res: Response, next: NextF
         const votes = req.body.inc_votes;
         const article = await updateArticleVotes(id, votes);
         res.status(200).send({ article });
+    }
+    catch (error) {
+        next(error);
+    }
+
+}
+
+export async function postArticle(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { username } = userFromRequest(req)
+        const articleToPost = { author: username, ...req.body }
+        const votes = req.body.inc_votes;
+        const article = await insertArticle(articleToPost);
+        res.status(201).send({ article });
     }
     catch (error) {
         next(error);

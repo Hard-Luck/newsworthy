@@ -107,6 +107,95 @@ describe('/api/articles', () => {
         .expect(403);
     });
   });
+  describe('POST', () => {
+    it('status 201: responds with newly added article', async () => {
+      const { body } = await request(app)
+        .post('/api/articles')
+        .send({
+          title: "New article",
+          body: "This is a new article",
+          topic: "mitch",
+          article_img_url: "http://example.com/article.jpg"
+        })
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(201);
+
+      expect(body.article).toHaveProperty('article_id');
+      expect(body.article).toHaveProperty('author');
+      expect(body.article).toHaveProperty('title');
+      expect(body.article).toHaveProperty('body');
+      expect(body.article).toHaveProperty('topic');
+      expect(body.article).toHaveProperty('article_img_url');
+      expect(body.article).toHaveProperty('votes');
+      expect(body.article).toHaveProperty('created_at');
+    });
+
+    it('status 201: responds with newly added article with default image url when not provided', async () => {
+      const { body } = await request(app)
+        .post('/api/articles')
+        .send({
+          title: "New article",
+          body: "This is a new article",
+          topic: "mitch",
+        })
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(201);
+
+      expect(body.article).toHaveProperty('article_id');
+      expect(body.article).toHaveProperty('author');
+      expect(body.article).toHaveProperty('title');
+      expect(body.article).toHaveProperty('body');
+      expect(body.article).toHaveProperty('topic');
+      expect(body.article.article_img_url).toBe('https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700');  // your default image URL here
+      expect(body.article).toHaveProperty('votes');
+      expect(body.article).toHaveProperty('created_at');
+    });
+
+    it('status 400: responds with bad request when missing required fields', async () => {
+      const { body } = await request(app)
+        .post('/api/articles')
+        .send({
+          body: "This is a new article",
+          topic: "mitch"
+        })
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+
+      expect(body.msg).toBe('Bad request');
+    });
+
+    it('status 400: responds with bad request when additional properties are provided', async () => {
+      const { body } = await request(app)
+        .post('/api/articles')
+        .send({
+          title: "New article",
+          body: "This is a new article",
+          topic: "mitch",
+          article_img_url: "http://example.com/article.jpg",
+          extra_prop: "Extra property"
+        })
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+
+      expect(body.msg).toBe('Bad request');
+    });
+
+    it('status 403: responds with forbidden when the user does not have permission to add an article', async () => {
+      const { body } = await request(app)
+        .post('/api/articles')
+        .send({
+          author: "unauthorized_user",
+          title: "New article",
+          body: "This is a new article",
+          topic: "Topic 1",
+          article_img_url: "http://example.com/article.jpg"
+        })
+        .expect(403);
+
+      expect(body.msg).toBe('No token provided');
+    });
+  });
+
 });
 describe("/api/articles/:article_id", () => {
   describe('GET', () => {
