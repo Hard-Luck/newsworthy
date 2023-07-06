@@ -1,7 +1,7 @@
 import express from 'express';
-import { deleteComment } from '../controllers/comments.controller';
+import { deleteComment, patchComment } from '../controllers/comments.controller';
 const commentsRouter = express.Router();
 
-commentsRouter.route('/:comment_id').delete(deleteComment)
+commentsRouter.route('/:comment_id').delete(deleteComment).patch(patchComment)
 
 export default commentsRouter;

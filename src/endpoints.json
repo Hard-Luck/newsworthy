@@ -162,15 +162,37 @@
                 "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
             }
         },
+        "PATCH /api/comments/:comment_id": {
+            "description": "Increments or decrements the votes on a comment and serves the updated comment",
+            "parameters": {
+                "comment_id": "integer corresponding to a comment_id"
+            },
+            "requestBody": {
+                "inc_votes": "integer value that indicates by how much the votes should be incremented (use negative values for decrementing)"
+            },
+            "validStatusCodes": {
+                "200": "OK. The request was successful and the updated comment is returned in the response body",
+                "400": "Bad Request. This status occurs if the request body is not in the correct format or includes invalid properties",
+                "404": "Not Found. This status occurs if there is no comment with the provided comment_id"
+            },
+            "exampleResponse": {
+                "comment": {
+                    "comment_id": 1,
+                    "votes": 1,
+                    "created_at": "2023-06-27T09:15:00.000Z",
+                    "author": "user1",
+                    "body": "This is a comment",
+                    "article_id": 1
+                }
+            }
+        },
         "DELETE /api/comments/:comment_id": {
             "description": "Deletes the comments if user has permission to delete, serves nothing",
             "responses": {
                 "204": {
                     "description": "The request was successful. The comment has been deleted and no content is returned."
                 },
-                "403": {
-                    "description": "Forbidden. The user does not have permission to delete the comment."
-                },
+
                 "404": {
                     "description": "Not found. The specified comment ID does not exist."
                 }
