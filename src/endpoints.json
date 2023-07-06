@@ -1,257 +1,257 @@
 {
-    "endpoints": {
-        "POST /api/login": {
-            "description": "Authenticates user and returns a JWT token. This token is required for all other endpoints, without it, a 403 status code will be returned.",
-            "exampleBody": {
-                "username": "test_user",
-                "password": "test_password"
-            },
-            "exampleResponse": {
-                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlciIsImlhdCI6MTYxNTM4Mjk2OX0.5hz1BEON7ZngCZw_VzJ4Ce7cYbP7W6y8U9PL4mMqE8k"
-            },
-            "possibleErrors": {
-                "400": "If the request body is not properly formatted.",
-                "401": "If the username or password is incorrect."
-            }
-        },
-        "GET /api": {
-            "description": "serves the description of all the endpoints including example requests, responses, and queries",
-            "responses": {
-                "200": {
-                    "description": "The request was successful. The response body contains the description of all the endpoints."
-                }
-            }
-        },
-        "GET /api/topics": {
-            "description": "serves all topics with their slug and description",
-            "responses": {
-                "200": {
-                    "description": "The request was successful. The response body contains an array of topics."
-                }
-            },
-            "exampleResponse": {
-                "topics": [
-                    {
-                        "description": "The man, the Mitch, the legend",
-                        "slug": "mitch"
-                    },
-                    {
-                        "description": "Not dogs",
-                        "slug": "cats"
-                    },
-                    {
-                        "description": "what books are made of",
-                        "slug": "paper"
-                    }
-                ]
-            }
-        },
-        "GET /api/articles": {
-            "description": "serves all articles with no article body and with comment count",
-            "responses": {
-                "200": {
-                    "description": "The request was successful. The response body contains an array of articles."
-                },
-                "400": {
-                    "description": "Bad request. The provided query parameter sort_by is invalid."
-                }
-            },
-            "queries": [
-                {
-                    "topic": "if omitted will serve all articles else will find matching (including partial match) it will return no results if match is not found"
-                },
-                {
-                    "sort_by": "defaults to date, serves 400 bad request if sort_by is invalid",
-                    "validSorts": ["created_at", "title", "votes", "author"]
-                },
-                {
-                    "order": "defaults to descending serves 400 if order is invalid",
-                    "validOrder": ["asc", "desc"]
-                }
-            ],
-            "exampleResponse": {
-                "articles": [
-                    {
-                        "author": "icellusedkars",
-                        "title": "Eight pug gifs that remind me of mitch",
-                        "article_id": 3,
-                        "topic": "mitch",
-                        "created_at": "2020-11-03T09:12:00.000Z",
-                        "votes": 0,
-                        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-                        "comment_count": "2"
-                    },
-                    {
-                        "author": "icellusedkars",
-                        "title": "A",
-                        "article_id": 6,
-                        "topic": "mitch",
-                        "created_at": "2020-10-18T01:00:00.000Z",
-                        "votes": 0,
-                        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-                        "comment_count": "1"
-                    }
-                ]
-            }
-        },
-        "POST /api/articles": {
-            "description": "adds a new article and serves the newly added article",
-            "requestBody": {
-                "title": "string of the article's title",
-                "body": "string of the article's body",
-                "topic": "string of the article's topic",
-                "article_img_url": "optional string of the article image url; defaults to a standard image if not provided"
-            },
-            "responseBody": {
-                "author": "author of the article",
-                "title": "title of the article",
-                "body": "body of the article",
-                "topic": "topic of the article",
-                "article_id": "the newly assigned id for the article",
-                "votes": "initially set to 0",
-                "created_at": "current time the article was created",
-                "comment_count": "initially set to 0",
-                "article_img_url": "url of the article's image"
-            },
-            "possibleErrors": {
-                "400": "bad request when missing required fields or unnecessary properties provided"
-            }
-        },
-        "GET /api/articles/:article_id": {
-            "description": "serves a single article with the corresponding id",
-            "responses": {
-                "200": {
-                    "description": "The request was successful. The response body contains the article."
-                },
-                "404": {
-                    "description": "Not found. The specified article ID does not exist."
-                }
-            },
-            "parameters": {
-                "article_id": "integer corresponding to an article_id"
-            },
-            "exampleResponse": {
-                "title": "Living in the shadow of a great man",
-                "topic": "mitch",
-                "author": "butter_bridge",
-                "body": "I find this existence challenging",
-                "created_at": 1594329060000,
-                "votes": 100,
-                "comment_count": 1,
-                "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-            }
-        },
-        "POST /api/articles/:article_id/comments": {
-            "description": "adds comment to the article matching the article_id and serves the comment on the response",
-            "responses": {
-                "201": {
-                    "description": "The request was successful. A new comment has been created."
-                },
-                "400": {
-                    "description": "Bad request. The request body or parts of it are missing or invalid."
-                }
-            },
-            "exampleBody": {
-                "body": "This is a comment"
-            },
-            "exampleResponse": {
-                "comment_id": 100,
-                "body": "This is a comment",
-                "article_id": 1,
-                "votes": 0,
-                "created_at": 1594329060000
-            }
-        },
-        "PATCH /api/articles/:article_id": {
-            "description": "increments or decrements the votes on an article and serves the updated article",
-            "responses": {
-                "200": {
-                    "description": "The request was successful. The votes on the article have been updated."
-                },
-                "400": {
-                    "description": "Bad request. The request body or parts of it are missing or invalid."
-                }
-            },
-            "exampleBody": {
-                "inc_votes": 1
-            },
-            "exampleResponse": {
-                "title": "Living in the shadow of a great man",
-                "topic": "mitch",
-                "author": "butter_bridge",
-                "body": "I find this existence challenging",
-                "created_at": 1594329060000,
-                "votes": 101,
-                "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-            }
-        },
-        "PATCH /api/comments/:comment_id": {
-            "description": "Increments or decrements the votes on a comment and serves the updated comment",
-            "parameters": {
-                "comment_id": "integer corresponding to a comment_id"
-            },
-            "requestBody": {
-                "inc_votes": "integer value that indicates by how much the votes should be incremented (use negative values for decrementing)"
-            },
-            "validStatusCodes": {
-                "200": "OK. The request was successful and the updated comment is returned in the response body",
-                "400": "Bad Request. This status occurs if the request body is not in the correct format or includes invalid properties",
-                "404": "Not Found. This status occurs if there is no comment with the provided comment_id"
-            },
-            "exampleResponse": {
-                "comment": {
-                    "comment_id": 1,
-                    "votes": 1,
-                    "created_at": "2023-06-27T09:15:00.000Z",
-                    "author": "user1",
-                    "body": "This is a comment",
-                    "article_id": 1
-                }
-            }
-        },
-        "DELETE /api/comments/:comment_id": {
-            "description": "Deletes the comments if user has permission to delete, serves nothing",
-            "responses": {
-                "204": {
-                    "description": "The request was successful. The comment has been deleted and no content is returned."
-                },
-
-                "404": {
-                    "description": "Not found. The specified comment ID does not exist."
-                }
-            }
-        },
-        "GET /api/users": {
-            "description": "Serves up a list of all the users",
-            "responses": {
-                "200": {
-                    "description": "The request was successful. The response body contains an array of users."
-                }
-            },
-            "queries": [],
-            "exampleResponse": [
-                {
-                    "username": "butter_bridge",
-                    "name": "jonny",
-                    "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-                }
-            ]
-        },
-        "GET /api/users/:username": {
-            "description": "Serves username, name, and img url for user if found",
-            "responses": {
-                "200": {
-                    "description": "The request was successful. The response body contains the user."
-                },
-                "404": {
-                    "description": "Not found. The specified username does not exist."
-                }
-            },
-            "exampleResponse": {
-                "username": "butter_bridge",
-                "name": "jonny",
-                "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-            }
+  "endpoints": {
+    "POST /api/login": {
+      "description": "Authenticates user and returns a JWT token. This token is required for all other endpoints, without it, a 403 status code will be returned.",
+      "exampleBody": {
+        "username": "test_user",
+        "password": "test_password"
+      },
+      "exampleResponse": {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RfdXNlciIsImlhdCI6MTYxNTM4Mjk2OX0.5hz1BEON7ZngCZw_VzJ4Ce7cYbP7W6y8U9PL4mMqE8k"
+      },
+      "possibleErrors": {
+        "400": "If the request body is not properly formatted.",
+        "401": "If the username or password is incorrect."
+      }
+    },
+    "GET /api": {
+      "description": "serves the description of all the endpoints including example requests, responses, and queries",
+      "responses": {
+        "200": {
+          "description": "The request was successful. The response body contains the description of all the endpoints."
         }
+      }
+    },
+    "GET /api/topics": {
+      "description": "serves all topics with their slug and description",
+      "responses": {
+        "200": {
+          "description": "The request was successful. The response body contains an array of topics."
+        }
+      },
+      "exampleResponse": {
+        "topics": [
+          {
+            "description": "The man, the Mitch, the legend",
+            "slug": "mitch"
+          },
+          {
+            "description": "Not dogs",
+            "slug": "cats"
+          },
+          {
+            "description": "what books are made of",
+            "slug": "paper"
+          }
+        ]
+      }
+    },
+    "GET /api/articles": {
+      "description": "serves all articles with no article body and with comment count",
+      "responses": {
+        "200": {
+          "description": "The request was successful. The response body contains an array of articles."
+        },
+        "400": {
+          "description": "Bad request. The provided query parameter sort_by is invalid."
+        }
+      },
+      "queries": [
+        {
+          "topic": "if omitted will serve all articles else will find matching (including partial match) it will return no results if match is not found"
+        },
+        {
+          "sort_by": "defaults to date, serves 400 bad request if sort_by is invalid",
+          "validSorts": ["created_at", "title", "votes", "author"]
+        },
+        {
+          "order": "defaults to descending serves 400 if order is invalid",
+          "validOrder": ["asc", "desc"]
+        }
+      ],
+      "exampleResponse": {
+        "articles": [
+          {
+            "author": "icellusedkars",
+            "title": "Eight pug gifs that remind me of mitch",
+            "article_id": 3,
+            "topic": "mitch",
+            "created_at": "2020-11-03T09:12:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            "comment_count": "2"
+          },
+          {
+            "author": "icellusedkars",
+            "title": "A",
+            "article_id": 6,
+            "topic": "mitch",
+            "created_at": "2020-10-18T01:00:00.000Z",
+            "votes": 0,
+            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+            "comment_count": "1"
+          }
+        ]
+      }
+    },
+    "POST /api/articles": {
+      "description": "adds a new article and serves the newly added article",
+      "requestBody": {
+        "title": "string of the article's title",
+        "body": "string of the article's body",
+        "topic": "string of the article's topic",
+        "article_img_url": "optional string of the article image url; defaults to a standard image if not provided"
+      },
+      "responseBody": {
+        "author": "author of the article",
+        "title": "title of the article",
+        "body": "body of the article",
+        "topic": "topic of the article",
+        "article_id": "the newly assigned id for the article",
+        "votes": "initially set to 0",
+        "created_at": "current time the article was created",
+        "comment_count": "initially set to 0",
+        "article_img_url": "url of the article's image"
+      },
+      "possibleErrors": {
+        "400": "bad request when missing required fields or unnecessary properties provided"
+      }
+    },
+    "GET /api/articles/:article_id": {
+      "description": "serves a single article with the corresponding id",
+      "responses": {
+        "200": {
+          "description": "The request was successful. The response body contains the article."
+        },
+        "404": {
+          "description": "Not found. The specified article ID does not exist."
+        }
+      },
+      "parameters": {
+        "article_id": "integer corresponding to an article_id"
+      },
+      "exampleResponse": {
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": 1594329060000,
+        "votes": 100,
+        "comment_count": 1,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    },
+    "POST /api/articles/:article_id/comments": {
+      "description": "adds comment to the article matching the article_id and serves the comment on the response",
+      "responses": {
+        "201": {
+          "description": "The request was successful. A new comment has been created."
+        },
+        "400": {
+          "description": "Bad request. The request body or parts of it are missing or invalid."
+        }
+      },
+      "exampleBody": {
+        "body": "This is a comment"
+      },
+      "exampleResponse": {
+        "comment_id": 100,
+        "body": "This is a comment",
+        "article_id": 1,
+        "votes": 0,
+        "created_at": 1594329060000
+      }
+    },
+    "PATCH /api/articles/:article_id": {
+      "description": "increments or decrements the votes on an article and serves the updated article",
+      "responses": {
+        "200": {
+          "description": "The request was successful. The votes on the article have been updated."
+        },
+        "400": {
+          "description": "Bad request. The request body or parts of it are missing or invalid."
+        }
+      },
+      "exampleBody": {
+        "inc_votes": 1
+      },
+      "exampleResponse": {
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": 1594329060000,
+        "votes": 101,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    },
+    "PATCH /api/comments/:comment_id": {
+      "description": "Increments or decrements the votes on a comment and serves the updated comment",
+      "parameters": {
+        "comment_id": "integer corresponding to a comment_id"
+      },
+      "requestBody": {
+        "inc_votes": "integer value that indicates by how much the votes should be incremented (use negative values for decrementing)"
+      },
+      "validStatusCodes": {
+        "200": "OK. The request was successful and the updated comment is returned in the response body",
+        "400": "Bad Request. This status occurs if the request body is not in the correct format or includes invalid properties",
+        "404": "Not Found. This status occurs if there is no comment with the provided comment_id"
+      },
+      "exampleResponse": {
+        "comment": {
+          "comment_id": 1,
+          "votes": 1,
+          "created_at": "2023-06-27T09:15:00.000Z",
+          "author": "user1",
+          "body": "This is a comment",
+          "article_id": 1
+        }
+      }
+    },
+    "DELETE /api/comments/:comment_id": {
+      "description": "Deletes the comments if user has permission to delete, serves nothing",
+      "responses": {
+        "204": {
+          "description": "The request was successful. The comment has been deleted and no content is returned."
+        },
+
+        "404": {
+          "description": "Not found. The specified comment ID does not exist."
+        }
+      }
+    },
+    "GET /api/users": {
+      "description": "Serves up a list of all the users",
+      "responses": {
+        "200": {
+          "description": "The request was successful. The response body contains an array of users."
+        }
+      },
+      "queries": [],
+      "exampleResponse": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    },
+    "GET /api/users/:username": {
+      "description": "Serves username, name, and img url for user if found",
+      "responses": {
+        "200": {
+          "description": "The request was successful. The response body contains the user."
+        },
+        "404": {
+          "description": "Not found. The specified username does not exist."
+        }
+      },
+      "exampleResponse": {
+        "username": "butter_bridge",
+        "name": "jonny",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      }
     }
+  }
 }

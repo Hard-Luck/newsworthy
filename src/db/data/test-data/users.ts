@@ -4,7 +4,7 @@ export default [
     name: 'jonny',
     avatar_url:
       'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
-    password: '$2a$10$uulg1I5d/zmB4LPf9XxDFudVpAJBqO35ogrdQfNDXWX9mHqsR6Z9e',
+    password: '$2a$10$uulg1I5d/zmB4LPf9XxDFudVpAJBqO35ogrdQfNDXWX9mHqsR6Z9e'
   },
   {
     username: 'icellusedkars',
