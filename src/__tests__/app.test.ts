@@ -387,7 +387,7 @@ describe('/api/articles/:article_id/comments', () => {
         .set('Authorization', `Bearer ${jwt}`)
         .expect(200);
       expect(Array.isArray(body.comments)).toBe(true);
-      expect(body.comments.length).toBe(11);
+      expect(body.comments.length).toBeGreaterThan(0);
       body.comments.forEach((comment: unknown) => {
         expect(comment).toHaveProperty('comment_id');
         expect(comment).toHaveProperty('votes');
@@ -398,6 +398,59 @@ describe('/api/articles/:article_id/comments', () => {
       });
       expect(isSorted<CommentResponse>(body.comments, 'created_at')).toBe(true);
     });
+    test('limit should default to 10', async () => {
+      const articleId = 1; // Use the ID of an article that has comments
+      const { body } = await request(app)
+        .get(`/api/articles/${articleId}/comments`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+      expect(Array.isArray(body.comments)).toBe(true);
+      expect(body.comments.length).toBe(10);
+    });
+    test('Status 200: Responds with paginated comments for an article when limit and page are valid', async () => {
+      const { body } = await request(app)
+        .get('/api/articles/1/comments?limit=5&p=1')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+
+      expect(body.comments).toHaveLength(5);
+    });
+
+    test('Status 200: Responds with comments starting from correct id when page is 2 and limit is 5', async () => {
+      const { body: firstPage } = await request(app)
+        .get('/api/articles/1/comments?limit=5&p=1')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+      const { body } = await request(app)
+        .get('/api/articles/1/comments?limit=5&p=2')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+      expect(firstPage.comments).toHaveLength(5);
+      expect(body.comments.length).toBeGreaterThan(0);
+      firstPage.comments.forEach((comment: { comment_id: number }) => {
+        body.comments.forEach((comment2: { comment_id: number }) => {
+          expect(comment.comment_id).not.toBe(comment2.comment_id);
+        });
+      });
+    });
+
+    test('Status 400: Responds with an error when limit is invalid', async () => {
+      const { body } = await request(app)
+        .get('/api/articles/1/comments?limit=invalid')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+
+      expect(body.msg).toBe('Bad Request');
+    });
+    test('Status 400: Responds with an error when page is invalid', async () => {
+      const { body } = await request(app)
+        .get('/api/articles/1/comments?p=invalid')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+
+      expect(body.msg).toBe('Bad Request');
+    });
+
     test('Status 400: Should respond with error if invalid article ID type is provided', async () => {
       const invalidArticleId = 'invalid';
       await request(app)

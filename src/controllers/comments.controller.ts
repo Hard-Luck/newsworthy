@@ -14,9 +14,11 @@ export async function getComments(
 ) {
   try {
     const article_id = parseInt(req.params.article_id);
-    const comments = await getCommentsByArticleId(article_id);
+    const { limit, p } = req.query as { limit: string; p: string };
+    const comments = await getCommentsByArticleId(article_id, limit, p);
     res.status(200).send({ comments });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 }

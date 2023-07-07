@@ -2,26 +2,20 @@ import db from '../db/connection';
 import format from 'pg-format';
 
 export async function getAllArticles({
-  sort_by,
-  order,
-  topic,
-  p,
-  limit,
-  totalCount
+  sort_by = 'created_at',
+  order = 'desc',
+  topic = '',
+  p = '1',
+  limit = '10',
+  totalCount = false
 }: {
-  sort_by?: string;
-  order?: string;
-  topic?: string;
+  sort_by: string;
+  order: string;
+  topic: string;
   p: string;
   limit: string;
   totalCount: boolean;
 }) {
-  limit ??= '10';
-  p ??= '1';
-  totalCount ??= false;
-  topic ??= '';
-  sort_by ??= 'created_at';
-  order ??= 'desc';
   const queryParams = [];
   const validSortBy = ['created_at', 'title', 'topic', 'author', 'votes'];
   const validOrder = ['asc', 'desc'];

@@ -1,11 +1,28 @@
 import db from '../db/connection';
 import { articleExists } from './articles.model';
-export async function getCommentsByArticleId(articleId: number) {
+
+export async function getCommentsByArticleId(
+  articleId: number,
+  limit: string | number = '10',
+  p: string | number = '1'
+) {
+  [limit, p] = [parseInt(limit as string), parseInt(p as string)];
+  if (isNaN(articleId) || isNaN(limit) || isNaN(p) || limit < 1 || p < 1) {
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
+  }
   if (!(await articleExists(articleId)))
     return Promise.reject({ status: 404, msg: 'Article not found' });
   const { rows } = await db.query(
-    `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`,
-    [articleId]
+    `
+    SELECT * 
+    FROM 
+      comments 
+    WHERE 
+      article_id = $1 
+    ORDER BY 
+      created_at DESC 
+    LIMIT $2 OFFSET $3;`,
+    [articleId, limit, (p - 1) * limit]
   );
   return rows;
 }
