@@ -149,3 +149,16 @@ async function countArticles(topic: string) {
   const { rows } = await db.query(query, params);
   return +rows[0].count;
 }
+
+export async function deleteArticleById(id: string) {
+  const articleId = parseInt(id);
+  if (isNaN(articleId))
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
+  const { rowCount } = await db.query(
+    `DELETE FROM articles WHERE article_id = $1 RETURNING *`,
+    [id]
+  );
+  if (rowCount === 0) {
+    return Promise.reject({ status: 404, msg: 'Article not found' });
+  }
+}

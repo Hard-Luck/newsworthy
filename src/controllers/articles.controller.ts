@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import {
+  deleteArticleById,
   getAllArticles,
   getArticleById,
   insertArticle,
@@ -75,6 +76,20 @@ export async function postArticle(
     const articleToPost = { author: username, ...req.body };
     const article = await insertArticle(articleToPost);
     res.status(201).send({ article });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteArticle(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { article_id } = req.params;
+    await deleteArticleById(article_id);
+    res.sendStatus(204);
   } catch (error) {
     next(error);
   }

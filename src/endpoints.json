@@ -173,6 +173,54 @@
         "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
       }
     },
+    "PATCH /api/articles/:article_id": {
+      "description": "increments or decrements the votes on an article and serves the updated article",
+      "responses": {
+        "200": {
+          "description": "The request was successful. The votes on the article have been updated."
+        },
+        "400": {
+          "description": "Bad Request. The request body or parts of it are missing or invalid."
+        }
+      },
+      "exampleBody": {
+        "inc_votes": 1
+      },
+      "exampleResponse": {
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": 1594329060000,
+        "votes": 101,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    },
+    "DELETE /api/articles/:article_id": {
+      "description": "deletes a specific article and its respective comments given an article_id",
+      "responses": {
+        "204": {
+          "description": "The article and its comments were successfully deleted. The server has successfully fulfilled the request and there is no additional content to send."
+        },
+        "400": {
+          "description": "Bad request. The provided article_id is invalid."
+        },
+        "403": {
+          "description": "Forbidden. The user is not logged in."
+        },
+        "404": {
+          "description": "Not Found. The provided article_id does not match any existing articles."
+        }
+      },
+      "parameters": [
+        {
+          "article_id": "The ID of the article to be deleted."
+        }
+      ],
+      "exampleRequest": {
+        "article_id": 1
+      }
+    },
     "GET /api/articles/:article_id/comments": {
       "description": "serves all comments for a given article_id with pagination",
       "responses": {
@@ -237,29 +285,7 @@
         "created_at": 1594329060000
       }
     },
-    "PATCH /api/articles/:article_id": {
-      "description": "increments or decrements the votes on an article and serves the updated article",
-      "responses": {
-        "200": {
-          "description": "The request was successful. The votes on the article have been updated."
-        },
-        "400": {
-          "description": "Bad Request. The request body or parts of it are missing or invalid."
-        }
-      },
-      "exampleBody": {
-        "inc_votes": 1
-      },
-      "exampleResponse": {
-        "title": "Living in the shadow of a great man",
-        "topic": "mitch",
-        "author": "butter_bridge",
-        "body": "I find this existence challenging",
-        "created_at": 1594329060000,
-        "votes": 101,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-      }
-    },
+
     "PATCH /api/comments/:comment_id": {
       "description": "Increments or decrements the votes on a comment and serves the updated comment",
       "parameters": {

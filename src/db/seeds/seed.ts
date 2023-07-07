@@ -51,15 +51,18 @@ const seed = async ({
   `);
 
   await db.query(`
-    CREATE TABLE comments (
-      comment_id SERIAL PRIMARY KEY,
-      body VARCHAR NOT NULL,
-      article_id INT REFERENCES articles(article_id) NOT NULL,
-      author VARCHAR REFERENCES users(username) NOT NULL,
-      votes INT DEFAULT 0 NOT NULL,
-      created_at TIMESTAMP DEFAULT NOW()
-    );
-  `);
+  CREATE TABLE comments (
+    comment_id SERIAL PRIMARY KEY,
+    body VARCHAR NOT NULL,
+    article_id INT NOT NULL,
+    author VARCHAR NOT NULL,
+    votes INT DEFAULT 0 NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    FOREIGN KEY (article_id) REFERENCES articles(article_id) ON DELETE CASCADE,
+    FOREIGN KEY (author) REFERENCES users(username)
+  );
+`);
+
 
   const insertTopicsQueryStr = format(
     'INSERT INTO topics (slug, description) VALUES %L;',
@@ -93,14 +96,14 @@ const seed = async ({
         votes: number;
         article_img_url: string;
       }) => [
-        article.title,
-        article.topic,
-        article.author,
-        article.body,
-        article.created_at,
-        article.votes || 0,
-        article.article_img_url
-      ]
+          article.title,
+          article.topic,
+          article.author,
+          article.body,
+          article.created_at,
+          article.votes || 0,
+          article.article_img_url
+        ]
     )
   );
 

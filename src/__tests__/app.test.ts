@@ -430,6 +430,53 @@ describe('/api/articles/:article_id', () => {
         .expect(404);
     });
   });
+  describe('DELETE', () => {
+    test('Status 204: Should delete an article given a valid article_id', async () => {
+      const articleId = 1; // Use the ID of an article that exists
+      await request(app)
+        .delete(`/api/articles/${articleId}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(204);
+
+      const { body } = await request(app)
+        .get(`/api/articles`)
+        .set('Authorization', `Bearer ${jwt}`);
+      expect(
+        body.articles.some(
+          (article: { article_id: number }) => article.article_id === articleId
+        )
+      ).toBe(false);
+    });
+    test('Status 204: Should also delete the comments associated with the article', async () => {
+      const articleId = 1;
+      await request(app)
+        .delete(`/api/articles/${articleId}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(204);
+      await request(app)
+        .get(`/api/articles/${articleId}/comments`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(404);
+    });
+    test('Status 400: Responds with error if invalid article ID type is provided', async () => {
+      const invalidArticleId = 'invalid';
+      await request(app)
+        .delete(`/api/articles/${invalidArticleId}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+    });
+    test('Status 403: Responds with error if user is not logged in', async () => {
+      const articleId = 1;
+      await request(app).delete(`/api/articles/${articleId}`).expect(403);
+    });
+    test('Status 404: Responds with error if article ID is not found', async () => {
+      const nonExistentArticleId = 9999;
+      await request(app)
+        .delete(`/api/articles/${nonExistentArticleId}`)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(404);
+    });
+  });
 });
 describe('/api/articles/:article_id/comments', () => {
   describe('GET', () => {
