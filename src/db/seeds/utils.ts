@@ -6,8 +6,7 @@ interface IDLookup {
 
 export const convertTimestampToDate = ({
   created_at,
-  ...otherProperties
-  // eslint-disable-next-line
+  ...otherProperties // eslint-disable-next-line
 }: any) => {
   if (!created_at) return { ...otherProperties };
   return { created_at: new Date(created_at), ...otherProperties };

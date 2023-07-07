@@ -47,26 +47,33 @@
       }
     },
     "GET /api/articles": {
-      "description": "serves all articles with no article body and with comment count",
+      "description": "Serves all articles with no article body and with comment count. It also supports pagination and returning total count of articles.",
       "responses": {
         "200": {
           "description": "The request was successful. The response body contains an array of articles."
         },
         "400": {
-          "description": "Bad request. The provided query parameter sort_by is invalid."
+          "description": "Bad request. The provided query parameter sort_by or limit or page is invalid."
         }
       },
       "queries": [
         {
-          "topic": "if omitted will serve all articles else will find matching (including partial match) it will return no results if match is not found"
+          "topic": "If omitted will serve all articles else will find matching (including partial match) it will return no results if match is not found"
         },
         {
-          "sort_by": "defaults to date, serves 400 bad request if sort_by is invalid",
-          "validSorts": ["created_at", "title", "votes", "author"]
+          "sort_by": "Defaults to date, serves 400 bad request if sort_by is invalid. Valid sort values are 'created_at', 'title', 'votes', 'author'."
         },
         {
-          "order": "defaults to descending serves 400 if order is invalid",
-          "validOrder": ["asc", "desc"]
+          "order": "Defaults to descending. Serves 400 if order is invalid. Valid order values are 'asc', 'desc'."
+        },
+        {
+          "limit": "Limits the number of responses (defaults to 10). Serves 400 if limit is invalid."
+        },
+        {
+          "p": "Stands for page and specifies the page at which to start (calculated using limit). Serves 400 if page is invalid."
+        },
+        {
+          "total_count": "If set to true, the response will include a total_count property that displays the total number of articles (with any filters applied, discounting the limit)."
         }
       ],
       "exampleResponse": {
@@ -91,7 +98,8 @@
             "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
             "comment_count": "1"
           }
-        ]
+        ],
+        "total_count": 20
       }
     },
     "POST /api/articles": {

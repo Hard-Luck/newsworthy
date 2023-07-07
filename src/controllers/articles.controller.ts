@@ -13,13 +13,24 @@ export async function getArticles(
   next: NextFunction
 ) {
   try {
-    const { sort_by, order, topic } = req.query as {
+    const { sort_by, order, topic, p, limit } = req.query as {
       sort_by: string;
       order: string;
       topic: string;
+      p: string;
+      limit: string;
     };
-    const articles = await getAllArticles({ sort_by, order, topic });
-    res.send({ articles });
+    const totalCount =
+      ((req.query.total_count as string) ?? '').toLowerCase() === 'true';
+    const articles = await getAllArticles({
+      sort_by,
+      order,
+      topic,
+      p,
+      limit,
+      totalCount
+    });
+    res.send(articles);
   } catch (error) {
     next(error);
   }

@@ -48,13 +48,15 @@ describe('/api/topics', () => {
 describe('/api/articles', () => {
   describe('GET', () => {
     test('Status 200: Should respond with an array of articles, each with required properties sorted by created_at', async () => {
-      const { body } = await request(app)
+      const {
+        body: { articles }
+      } = await request(app)
         .get('/api/articles')
         .set('Authorization', `Bearer ${jwt}`)
         .expect(200);
-      expect(Array.isArray(body.articles)).toBe(true);
-      expect(body.articles.length).toBe(13);
-      body.articles.forEach((article: unknown) => {
+      expect(Array.isArray(articles)).toBe(true);
+      expect(articles.length).toBeGreaterThan(0);
+      articles.forEach((article: unknown) => {
         expect(article).toHaveProperty('author');
         expect(article).toHaveProperty('title');
         expect(article).toHaveProperty('article_id');
@@ -65,7 +67,7 @@ describe('/api/articles', () => {
         expect(article).toHaveProperty('comment_count');
         expect(article).not.toHaveProperty('body');
       });
-      isSorted(body.articles, 'created_at', true);
+      isSorted(articles, 'created_at', true);
     });
     test('Status 200: Should respond with articles sorted by votes in ascending order when sort_by=votes and order=asc is provided', async () => {
       const { body } = await request(app)
@@ -84,6 +86,68 @@ describe('/api/articles', () => {
         expect(article).toHaveProperty('topic', 'mitch');
       });
     });
+    test('GET returns limited number of articles when limit query is provided', async () => {
+      const {
+        body: { articles }
+      } = await request(app)
+        .get('/api/articles?limit=5')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+      expect(articles).toHaveLength(5);
+    });
+    test('GET returns articles starting from a certain page when page query is provided', async () => {
+      const {
+        body: { articles: firstPage }
+      } = await request(app)
+        .get('/api/articles?limit=5&p=1')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+      const {
+        body: { articles }
+      } = await request(app)
+        .get('/api/articles?limit=5&p=2')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+      expect(articles.length).toBeGreaterThan(0);
+      expect(firstPage).toHaveLength(5);
+      firstPage.forEach((article: { article_id: number }) => {
+        articles.forEach((secondPageArticles: { article_id: number }) => {
+          expect(article.article_id).not.toBe(secondPageArticles.article_id);
+        });
+      });
+    });
+
+    test('GET returns articles with a total count when total_count query is set to true', async () => {
+      const {
+        body: { total_count }
+      } = await request(app)
+        .get('/api/articles?total_count=true')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+      expect(total_count).toBe(13);
+    });
+
+    test('Status 400: Should respond with error when invalid limit is provided', async () => {
+      const { body } = await request(app)
+        .get('/api/articles?limit=invalid')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+      expect(body.msg).toEqual('Bad request');
+    });
+    test('Status 400: Should respond with error when invalid page is provided', async () => {
+      const { body } = await request(app)
+        .get('/api/articles?p=invalid')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+      expect(body.msg).toEqual('Bad request');
+    });
+    test('Status 400: Should ignore incorrect total_count', async () => {
+      await request(app)
+        .get('/api/articles?total_count=invalid')
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(200);
+    });
+
     test('Status 400: Should respond with error when invalid sort_by is provided', async () => {
       await request(app)
         .get('/api/articles?sort_by=invalid')
