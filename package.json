@@ -12,7 +12,8 @@
     "start": "ts-node ./src/listen.ts",
     "encrypt": "ts-node ./src/auth/encrypt.ts",
     "prod": "ts-node --transpile-only ./src/listen.ts",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "prettier": "npx prettier --write ."
   },
   "keywords": [],
   "author": "",

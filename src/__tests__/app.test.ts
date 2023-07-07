@@ -44,6 +44,68 @@ describe('/api/topics', () => {
       await request(app).get('/api/topics').expect(403);
     });
   });
+  describe('POST', () => {
+    test('Status 201: Should respond with the newly created topic', async () => {
+      const newTopic = {
+        slug: 'new_topic',
+        description: 'This is a new topic'
+      };
+      const { body } = await request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(201);
+      expect(body.topic).toHaveProperty('slug', newTopic.slug);
+      expect(body.topic).toHaveProperty('description', newTopic.description);
+    });
+    test('Status 400: Should respond with an error if the slug is not provided', async () => {
+      const newTopic = {
+        description: 'This is a new topic'
+      };
+      const { body } = await request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+      expect(body.msg).toBe('Bad Request');
+    });
+    test('Status 400: Should respond with an error if the description is not provided', async () => {
+      const newTopic = {
+        slug: 'new_topic'
+      };
+      const { body } = await request(app)
+        .post('/api/topics')
+        .send(newTopic)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+      expect(body.msg).toBe('Bad Request');
+    });
+    test('Status 400: Should respond with an error if the slug already exists', async () => {
+      const existingTopic = {
+        slug: 'existing_topic',
+        description: 'This is an existing topic'
+      };
+      await request(app)
+        .post('/api/topics')
+        .send(existingTopic)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(201);
+
+      const { body } = await request(app)
+        .post('/api/topics')
+        .send(existingTopic)
+        .set('Authorization', `Bearer ${jwt}`)
+        .expect(400);
+      expect(body.msg).toBe('Bad Request');
+    });
+    test('Status 403: Should respond with error if user is not logged in', async () => {
+      const newTopic = {
+        slug: 'new_topic',
+        description: 'This is a new topic'
+      };
+      await request(app).post('/api/topics').send(newTopic).expect(403);
+    });
+  });
 });
 describe('/api/articles', () => {
   describe('GET', () => {
@@ -86,7 +148,7 @@ describe('/api/articles', () => {
         expect(article).toHaveProperty('topic', 'mitch');
       });
     });
-    test('GET returns limited number of articles when limit query is provided', async () => {
+    test('returns limited number of articles when limit query is provided', async () => {
       const {
         body: { articles }
       } = await request(app)
@@ -95,7 +157,7 @@ describe('/api/articles', () => {
         .expect(200);
       expect(articles).toHaveLength(5);
     });
-    test('GET returns articles starting from a certain page when page query is provided', async () => {
+    test('returns articles starting from a certain page when page query is provided', async () => {
       const {
         body: { articles: firstPage }
       } = await request(app)
@@ -117,7 +179,7 @@ describe('/api/articles', () => {
       });
     });
 
-    test('GET returns articles with a total count when total_count query is set to true', async () => {
+    test('returns articles with a total count when total_count query is set to true', async () => {
       const {
         body: { total_count }
       } = await request(app)
@@ -132,14 +194,14 @@ describe('/api/articles', () => {
         .get('/api/articles?limit=invalid')
         .set('Authorization', `Bearer ${jwt}`)
         .expect(400);
-      expect(body.msg).toEqual('Bad request');
+      expect(body.msg).toEqual('Bad Request');
     });
     test('Status 400: Should respond with error when invalid page is provided', async () => {
       const { body } = await request(app)
         .get('/api/articles?p=invalid')
         .set('Authorization', `Bearer ${jwt}`)
         .expect(400);
-      expect(body.msg).toEqual('Bad request');
+      expect(body.msg).toEqual('Bad Request');
     });
     test('Status 400: Should ignore incorrect total_count', async () => {
       await request(app)
@@ -220,7 +282,7 @@ describe('/api/articles', () => {
         .set('Authorization', `Bearer ${jwt}`)
         .expect(400);
 
-      expect(body.msg).toBe('Bad request');
+      expect(body.msg).toBe('Bad Request');
     });
 
     it('status 400: responds with bad request when additional properties are provided', async () => {
@@ -236,7 +298,7 @@ describe('/api/articles', () => {
         .set('Authorization', `Bearer ${jwt}`)
         .expect(400);
 
-      expect(body.msg).toBe('Bad request');
+      expect(body.msg).toBe('Bad Request');
     });
 
     it('status 403: responds with forbidden when the user does not have permission to add an article', async () => {
@@ -278,7 +340,7 @@ describe('/api/articles/:article_id', () => {
         .get(`/api/articles/${invalidArticleId}`)
         .set('Authorization', `Bearer ${jwt}`)
         .expect(400);
-      expect(body.msg).toBe('Bad request');
+      expect(body.msg).toBe('Bad Request');
     });
     test('Status 403: Should respond with error if user is not logged in', async () => {
       const articleId = 1;
@@ -560,7 +622,7 @@ describe('/api/comments/:comment_id', () => {
         .send({ incorrect_key: 1 })
         .set('Authorization', `Bearer ${jwt}`)
         .expect(400);
-      expect(body.msg).toBe('Bad request');
+      expect(body.msg).toBe('Bad Request');
     });
     test('Status:400, for an invalid comment_id', async () => {
       const { body } = await request(app)
@@ -568,7 +630,7 @@ describe('/api/comments/:comment_id', () => {
         .send({ inc_votes: 1 })
         .set('Authorization', `Bearer ${jwt}`)
         .expect(400);
-      expect(body.msg).toBe('Bad request');
+      expect(body.msg).toBe('Bad Request');
     });
     test('Status:404, for a non-existent comment_id', async () => {
       const { body } = await request(app)

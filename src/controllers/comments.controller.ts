@@ -18,7 +18,6 @@ export async function getComments(
     const comments = await getCommentsByArticleId(article_id, limit, p);
     res.status(200).send({ comments });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 }

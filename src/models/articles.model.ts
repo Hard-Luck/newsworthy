@@ -20,13 +20,13 @@ export async function getAllArticles({
   const validSortBy = ['created_at', 'title', 'topic', 'author', 'votes'];
   const validOrder = ['asc', 'desc'];
   if (!validSortBy.includes(sort_by) || !validOrder.includes(order)) {
-    return Promise.reject({ status: 400, msg: 'Bad request' });
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
   }
   if (!/\d/.test(p) || !/\d/.test(limit)) {
-    return Promise.reject({ status: 400, msg: 'Bad request' });
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
   }
   if (+limit < 1 || +p < 1) {
-    return Promise.reject({ status: 400, msg: 'Bad request' });
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
   }
   let query = `
     SELECT 
@@ -126,7 +126,7 @@ export async function insertArticle(article: {
   const columnNames = entries.map(([key]) => key);
   const values = entries.map(([, value]) => value);
   if (columnNames.some(column => !allowedColumnNames.includes(column))) {
-    return Promise.reject({ status: 400, msg: 'Bad request' });
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
   }
   const columnsFormat = columnNames.map(() => '%I').join(', ');
   const valuesFormat = columnNames.map(() => '%L').join(', ');

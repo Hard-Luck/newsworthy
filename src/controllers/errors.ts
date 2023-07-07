@@ -44,9 +44,9 @@ export function handlePSQLErrors(
   next: NextFunction
 ) {
   if (isPostgreSQLError(err)) {
-    const codes = ['22P02', '23502'];
+    const codes = ['22P02', '23502', '23505'];
     if (codes.includes(err.code)) {
-      res.status(400).send({ msg: 'Bad request' });
+      res.status(400).send({ msg: 'Bad Request' });
     }
   } else {
     next(err);
@@ -54,6 +54,5 @@ export function handlePSQLErrors(
 }
 
 export const handle500s = (err: unknown, req: Request, res: Response): void => {
-  console.log(err);
   res.status(500).send({ msg: 'Internal Server Error' });
 };
