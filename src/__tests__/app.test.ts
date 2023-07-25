@@ -372,7 +372,7 @@ describe('/api/articles/:article_id', () => {
         .send(voteIncrement)
         .set('Authorization', `Bearer ${jwt}`)
         .expect(200);
-      expect(body.article.votes).toBe(1);
+      expect(body.article.votes).toBe(101);
     });
     test('Status 200: Responds with the updated article when a valid positive vote increment greater than one is provided', async () => {
       const articleId = 1; // Use the ID of an article that exists in the database
@@ -382,7 +382,7 @@ describe('/api/articles/:article_id', () => {
         .send(voteIncrement)
         .set('Authorization', `Bearer ${jwt}`)
         .expect(200);
-      expect(body.article.votes).toBe(10);
+      expect(body.article.votes).toBe(110);
     });
     test('Status 200: Responds with the updated article when a valid negative vote increment is provided', async () => {
       const articleId = 1; // Use the ID of an article that exists in the database
@@ -392,7 +392,7 @@ describe('/api/articles/:article_id', () => {
         .send(voteIncrement)
         .set('Authorization', `Bearer ${jwt}`)
         .expect(200);
-      expect(body.article.votes).toBe(-5);
+      expect(body.article.votes).toBe(95);
     });
     test('Status 400: Responds with error when an invalid vote increment is provided', async () => {
       const articleId = 1;

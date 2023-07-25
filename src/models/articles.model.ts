@@ -37,7 +37,7 @@ export async function getAllArticles({
         a.created_at,
         a.votes,
         a.article_img_url,
-        COUNT(c.comment_id) AS comment_count
+        CAST(COUNT(c.comment_id) AS INT) AS comment_count
     FROM 
         articles a
     LEFT JOIN 
@@ -99,7 +99,7 @@ export async function articleExists(id: number) {
 
 export async function updateArticleVotes(id: number, votes: number) {
   const { rowCount, rows } = await db.query(
-    `UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *`,
+    `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
     [votes, id]
   );
   if (rowCount === 0) {
